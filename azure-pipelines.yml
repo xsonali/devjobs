@@ -11,7 +11,7 @@ variables:
   - name: TF_VERSION
     value: '1.6.6'
   - name: backendServiceArm
-    value: 'terraform-hubspoke-connection'  # Must be an AzureRM service connection
+    value: 'devjobsConnection'  # Must be an AzureRM service connection
 
 steps:
 
