@@ -36,7 +36,7 @@ resource "azurerm_subnet" "firewall_subnet" {
   name                 = "AzureFirewallSubnet"
   resource_group_name  = azurerm_resource_group.hub_rg.name
   virtual_network_name = azurerm_virtual_network.hub_vnet.name
-  address_prefixes     = ["10.0.2.0/27"]
+  address_prefixes     = ["10.0.2.0/26"]
 }
 
 # DNS Subnet for private name resolution
@@ -121,7 +121,7 @@ resource "azurerm_public_ip" "vpn_gw_public_ip1" {
   name                = "vpn-gateway-pip1"
   location            = azurerm_resource_group.hub_rg.location
   resource_group_name = azurerm_resource_group.hub_rg.name
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"
   sku                 = "Standard"
 }
 
@@ -129,7 +129,7 @@ resource "azurerm_public_ip" "vpn_gw_public_ip2" {
   name                = "vpn-gateway-pip2"
   location            = azurerm_resource_group.hub_rg.location
   resource_group_name = azurerm_resource_group.hub_rg.name
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"
   sku                 = "Standard"
 }
 

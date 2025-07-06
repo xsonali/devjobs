@@ -4,63 +4,63 @@ trigger:
       - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-latest'  # Use Microsoft-hosted Ubuntu agent
 
 variables:
   - group: devjobs-grp  # Your variable group in Azure DevOps
   - name: TF_VERSION
     value: '1.6.6'
   - name: backendServiceArm
-    value: 'devjobsConnection'  # Must be an AzureRM service connection
+    value: 'devjobsConnection'  # AzureRM service connection
 
 steps:
+  # Step 1: Install Terraform
+  - task: TerraformInstaller@1
+    displayName: 'Install Terraform'
+    inputs:
+      terraformVersion: $(TF_VERSION)
 
-# Step 1: Install Terraform
-- task: TerraformInstaller@0
-  inputs:
-    terraformVersion: $(TF_VERSION)
+  # Step 2: Create directory for tfplan
+  - script: mkdir -p tfplan
+    displayName: 'Create tfplan directory'
 
-# Step 2: Create directory for tfplan
-- script: mkdir -p tfplan
-  displayName: 'Create tfplan directory'
+  # Step 3: Terraform Init
+  - task: TerraformCLI@1
+    displayName: 'Terraform Init'
+    inputs:
+      command: 'init'
+      provider: 'azurerm'
+      backendServiceArm: $(backendServiceArm)
+      backendAzureRmResourceGroupName: 'PTutorial-rg'
+      backendAzureRmStorageAccountName: 'ptutorial321'
+      backendAzureRmContainerName: 'ptstate'
+      backendAzureRmKey: 'terraform.tfstate'
+      workingDirectory: '.'
 
-# Step 3: Terraform Init
-- task: TerraformCLI@0
-  displayName: 'Terraform Init'
-  inputs:
-    command: 'init'
-    provider: 'azurerm'
-    backendServiceArm: $(backendServiceArm)
-    backendAzureRmResourceGroupName: 'PTutorial-rg'
-    backendAzureRmStorageAccountName: 'ptutorial321'
-    backendAzureRmContainerName: 'ptstate'
-    backendAzureRmKey: 'terraform.tfstate'
-    workingDirectory: '.'
+  # Step 4: Terraform Plan
+  - task: TerraformCLI@1
+    displayName: 'Terraform Plan'
+    inputs:
+      command: 'plan'
+      provider: 'azurerm'
+      environmentServiceNameAzureRM: $(backendServiceArm)
+      workingDirectory: '.'
+      args: '-out=./tfplan/tfplan'
 
-# Step 4: Terraform Plan
-- task: TerraformCLI@0
-  displayName: 'Terraform Plan'
-  inputs:
-    command: 'plan'
-    provider: 'azurerm'
-    environmentServiceNameAzureRM: $(backendServiceArm)
-    workingDirectory: '.'
-    args: '-out=./tfplan/tfplan'
+  # Step 5: Publish Terraform Plan Artifact
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish Terraform Plan'
+    inputs:
+      targetPath: '$(System.DefaultWorkingDirectory)/tfplan'
+      artifact: 'tfplan'
+      publishLocation: 'pipeline'
 
-# Step 5: Publish Terraform Plan Artifact
-- task: PublishPipelineArtifact@1
-  displayName: 'Publish Terraform Plan Artifact'
-  inputs:
-    targetPath: '$(System.DefaultWorkingDirectory)/tfplan'
-    artifact: 'tfplan'
-    publishLocation: 'pipeline'
-
-# Step 6: Terraform Apply
-- task: TerraformCLI@0
-  displayName: 'Terraform Apply'
-  inputs:
-    command: 'apply'
-    provider: 'azurerm'
-    environmentServiceNameAzureRM: $(backendServiceArm)
-    workingDirectory: '.'
-    args: './tfplan/tfplan -auto-approve'
+  # Step 6: Terraform Apply
+  - task: TerraformCLI@1
+    displayName: 'Terraform Apply'
+    inputs:
+      command: 'apply'
+      provider: 'azurerm'
+      environmentServiceNameAzureRM: $(backendServiceArm)
+      workingDirectory: '.'
+      args: './tfplan/tfplan -auto-approve'

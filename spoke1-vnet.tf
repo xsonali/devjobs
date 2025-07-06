@@ -27,7 +27,7 @@ resource "azurerm_network_interface" "workload_nic" {
   ip_configuration {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.workload_sn.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.1.0.4"
   }
 }
-  

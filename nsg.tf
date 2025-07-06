@@ -5,8 +5,20 @@ resource "azurerm_network_security_group" "nva_nsg" {
   resource_group_name = azurerm_resource_group.hub_rg.name
 
   security_rule {
-    name                       = "Allow-Spoke-To-NVA"
+    name                       = "Allow-SSH"
     priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*" # Or restrict to your IP: "203.0.113.5/32"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Allow-Spoke-To-NVA"
+    priority                   = 110
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -18,7 +30,7 @@ resource "azurerm_network_security_group" "nva_nsg" {
 
   security_rule {
     name                       = "Allow-Return-Traffic"
-    priority                   = 110
+    priority                   = 120
     direction                  = "Outbound"
     access                     = "Allow"
     protocol                   = "*"

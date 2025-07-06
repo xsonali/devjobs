@@ -31,3 +31,7 @@ output "vpn_gateway_public_ip1" {
 output "vpn_gateway_public_ip2" {
   value = azurerm_public_ip.vpn_gw_public_ip2.ip_address
 }
+
+output "firewall_public_ip" {
+  value = azurerm_public_ip.firewall_pip.ip_address
+}

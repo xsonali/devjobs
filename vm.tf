@@ -1,11 +1,16 @@
 # Linux VM as NVA
 resource "azurerm_linux_virtual_machine" "nva_vm" {
-  name                = "nva-vm"
-  resource_group_name = azurerm_resource_group.hub_rg.name
-  location            = azurerm_resource_group.hub_rg.location
-  size                = var.vm_size
-  admin_username      = var.admin_user
-  admin_password      = var.admin_password
+  name                            = "nva-vm"
+  resource_group_name             = azurerm_resource_group.hub_rg.name
+  location                        = azurerm_resource_group.hub_rg.location
+  size                            = var.vm_size
+  admin_username                  = var.admin_user
+  disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = var.admin_user
+    public_key = file("C:/Users/Alam/.ssh/new_azure_key.pub")
+  }
 
   network_interface_ids = [
     azurerm_network_interface.nva_nic.id
