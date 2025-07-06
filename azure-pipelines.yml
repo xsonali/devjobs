@@ -4,7 +4,7 @@ trigger:
       - main
 
 pool:
-  name: Default
+  vmImage: 'ubuntu-latest'  # Use a Microsoft-hosted agent if you're not using a self-hosted pool
 
 variables:
   - group: devjobs-grp
@@ -15,46 +15,48 @@ variables:
 
 steps:
 # Install specified Terraform version
-- task: TerraformInstaller@0
+- task: TerraformInstaller@1
+  displayName: 'Install Terraform'
   inputs:
     terraformVersion: $(TF_VERSION)
 
 # Terraform Init
-- task: TerraformCLI@0
+- task: TerraformCLI@1
   displayName: 'Terraform Init'
   inputs:
     command: 'init'
     provider: 'azurerm'
-    backendServiceArm: 'terraform-hubspoke-connection'
+    backendServiceArm: $(backendServiceArm)
     backendAzureRmResourceGroupName: 'PTutorial-rg'
     backendAzureRmStorageAccountName: 'ptutorial321'
     backendAzureRmContainerName: 'ptstate'
     backendAzureRmKey: 'terraform.tfstate'
-    workingDirectory: '.'  # Adjust if your .tf files are in a subfolder
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
 
 # Terraform Plan
-- task: TerraformCLI@0
+- task: TerraformCLI@1
   displayName: 'Terraform Plan'
   inputs:
     command: 'plan'
     provider: 'azurerm'
     environmentServiceNameAzureRM: $(backendServiceArm)
-    workingDirectory: '.'
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
     args: '-out=tfplan'
 
-# Publish the plan file (optional)
+# Publish Plan as artifact (optional but useful for approvals)
 - task: PublishPipelineArtifact@1
-  displayName: 'Publish Terraform Plan Artifact'
+  displayName: 'Publish Terraform Plan'
   inputs:
     targetPath: '$(System.DefaultWorkingDirectory)/tfplan'
     artifact: 'tfplan'
     publishLocation: 'pipeline'
 
 # Terraform Apply
-- task: TerraformCLI@0
+- task: TerraformCLI@1
   displayName: 'Terraform Apply'
   inputs:
     command: 'apply'
     provider: 'azurerm'
+    environmentServiceNameAzureRM: $(backendServiceArm)
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
     args: 'tfplan -auto-approve'
-    workingDirectory: '.'
