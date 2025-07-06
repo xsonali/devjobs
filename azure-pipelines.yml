@@ -1,0 +1,60 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  name: Default
+
+variables:
+  - group: devjobs-grp
+  - name: TF_VERSION
+    value: '1.6.6'
+  - name: backendServiceArm
+    value: 'terraform-hubspoke-connection'
+
+steps:
+# Install specified Terraform version
+- task: TerraformInstaller@0
+  inputs:
+    terraformVersion: $(TF_VERSION)
+
+# Terraform Init
+- task: TerraformCLI@0
+  displayName: 'Terraform Init'
+  inputs:
+    command: 'init'
+    provider: 'azurerm'
+    backendServiceArm: 'terraform-hubspoke-connection'
+    backendAzureRmResourceGroupName: 'PTutorial-rg'
+    backendAzureRmStorageAccountName: 'ptutorial321'
+    backendAzureRmContainerName: 'ptstate'
+    backendAzureRmKey: 'terraform.tfstate'
+    workingDirectory: '.'  # Adjust if your .tf files are in a subfolder
+
+# Terraform Plan
+- task: TerraformCLI@0
+  displayName: 'Terraform Plan'
+  inputs:
+    command: 'plan'
+    provider: 'azurerm'
+    environmentServiceNameAzureRM: $(backendServiceArm)
+    workingDirectory: '.'
+    args: '-out=tfplan'
+
+# Publish the plan file (optional)
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Terraform Plan Artifact'
+  inputs:
+    targetPath: '$(System.DefaultWorkingDirectory)/tfplan'
+    artifact: 'tfplan'
+    publishLocation: 'pipeline'
+
+# Terraform Apply
+- task: TerraformCLI@0
+  displayName: 'Terraform Apply'
+  inputs:
+    command: 'apply'
+    provider: 'azurerm'
+    args: 'tfplan -auto-approve'
+    workingDirectory: '.'
