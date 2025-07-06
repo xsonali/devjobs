@@ -1,0 +1,25 @@
+# === Terraform files ===
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+crash.log
+
+# === Variable files (secrets) ===
+*.tfvars
+*.tfvars.json
+secret.auto.tfvars
+terraform.tfvars
+
+# === Sensitive shell environment files ===
+.env
+*.env
+
+# === Editor/OS-specific ===
+*.log
+*.swp
+*.bak
+.DS_Store
+.idea/
+.vscode/
+*.iml
