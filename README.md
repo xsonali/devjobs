@@ -3,7 +3,7 @@ This project implements Infrastructure as Code (IaC) using Terraform to deploy a
 
 The solution follows CI/CD best practices, enabling automated, consistent, and repeatable provisioning and updates of the infrastructure using tools like GitHub Actions or Azure DevOps.
 
-🚀 Key Features
+Key Features
 Hub Virtual Network: Includes Azure Firewall, VPN Gateway, and custom DNS server
 
 Spoke Virtual Networks: Segregated networks for workloads (e.g., web apps, VMs)
@@ -18,7 +18,7 @@ Terraform Best Practices: Modular design, variable definitions, and remote state
 
 CI/CD Integration Ready: Easily connect with GitHub Actions, Azure DevOps, etc.
 
-📦 Deployment Overview
+Deployment Overview
 Write Terraform configuration files to define your infrastructure
 
 Run terraform init to initialize the working directory
