@@ -9,7 +9,7 @@ resource "azurerm_linux_virtual_machine" "nva_vm" {
 
   admin_ssh_key {
     username   = var.admin_user
-    public_key = file("C:/Users/Alam/.ssh/new_azure_key.pub")
+    public_key = file("${path.module}/keys/new_azure_key.pub")
   }
 
   network_interface_ids = [
