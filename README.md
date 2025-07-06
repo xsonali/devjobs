@@ -1,46 +1,66 @@
 Terraform Azure Hub-Spoke Network Infrastructure
-This project implements Infrastructure as Code (IaC) using Terraform to deploy an Azure Hub-Spoke network topology. The infrastructure is designed for scalable, secure, and manageable Azure environments.
+This project implements Infrastructure as Code (IaC) using Terraform to deploy a robust Azure Hub-Spoke network topology. It is designed with scalability, security, and maintainability in mind — ideal for enterprise-grade cloud environments.
 
-The deployment follows CI/CD best practices to automate provisioning and updates of the cloud infrastructure, ensuring consistent and repeatable deployments.
+The solution follows CI/CD best practices, enabling automated, consistent, and repeatable provisioning and updates of the infrastructure using tools like GitHub Actions or Azure DevOps.
 
-Key Features
-Hub virtual network with firewall, VPN gateway, and DNS server
+🚀 Key Features
+Hub Virtual Network: Includes Azure Firewall, VPN Gateway, and custom DNS server
 
-Multiple spoke virtual networks for workloads, e.g., web apps, VMs
+Spoke Virtual Networks: Segregated networks for workloads (e.g., web apps, VMs)
 
-Network security through Azure Firewall with application rules
+Security: Centralized traffic filtering using Azure Firewall with application rules
 
-Private DNS zones linked to virtual networks for name resolution
+Private DNS Zones: Linked to VNets for internal name resolution
 
-User Defined Routes (UDRs) to route traffic via firewall and gateways
+User-Defined Routes (UDRs): Control traffic flow via firewall and gateway
 
-Use of Terraform modules, variables, and state management
+Terraform Best Practices: Modular design, variable definitions, and remote state support
 
-Integration ready for CI/CD pipelines (GitHub Actions, Azure DevOps, etc.)
+CI/CD Integration Ready: Easily connect with GitHub Actions, Azure DevOps, etc.
 
-Deployment Overview
-Write Terraform configuration files describing the infrastructure components.
+📦 Deployment Overview
+Write Terraform configuration files to define your infrastructure
 
-Use terraform init to initialize the working directory.
+Run terraform init to initialize the working directory
 
-Run terraform plan to review infrastructure changes.
+Use terraform plan to review the proposed changes
 
-Execute terraform apply to provision resources in Azure.
+Apply the infrastructure with terraform apply
 
-Automate these steps through CI/CD pipelines for reliable deployments.
+Automate all the above in a CI/CD pipeline for production-ready deployments
 
 Prerequisites
-Azure subscription with appropriate permissions
+An Azure subscription with sufficient permissions
 
-Terraform v1.0 or later installed
+Terraform CLI v1.0+ installed
 
-Azure CLI installed and logged in
+Azure CLI installed and authenticated (az login)
 
-Optional: GitHub repo configured for source control and pipeline automation
+(Optional) A GitHub repository for source control and CI/CD integration
 
 How to Use
-Clone the repo
+Clone this repository
 
-Customize variables in terraform.tfvars or environment variables
+bash
+Copy
+Edit
+git clone https://github.com/xsonali/devjobs.git
+cd devjobs
+Customize configuration
 
-Run Terraform commands or configure your CI/CD pipeline to deploy
+Edit terraform.tfvars to set your desired values
+
+Or use environment variables for sensitive data
+
+Deploy with Terraform
+
+bash
+Copy
+Edit
+terraform init
+terraform plan
+terraform apply
+CI/CD Option
+
+Set up a GitHub Actions or Azure DevOps pipeline to automate the above steps
+
