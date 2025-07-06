@@ -4,24 +4,28 @@ trigger:
       - main
 
 pool:
-  vmImage: 'ubuntu-latest'  # Use a Microsoft-hosted agent if you're not using a self-hosted pool
+  vmImage: 'ubuntu-latest'
 
 variables:
-  - group: devjobs-grp
+  - group: devjobs-grp  # Your variable group in Azure DevOps
   - name: TF_VERSION
     value: '1.6.6'
   - name: backendServiceArm
-    value: 'devjobsConnection'
+    value: 'terraform-hubspoke-connection'  # Must be an AzureRM service connection
 
 steps:
-# Install specified Terraform version
-- task: TerraformInstaller@1
-  displayName: 'Install Terraform'
+
+# Step 1: Install Terraform
+- task: TerraformInstaller@0
   inputs:
     terraformVersion: $(TF_VERSION)
 
-# Terraform Init
-- task: TerraformCLI@1
+# Step 2: Create directory for tfplan
+- script: mkdir -p tfplan
+  displayName: 'Create tfplan directory'
+
+# Step 3: Terraform Init
+- task: TerraformCLI@0
   displayName: 'Terraform Init'
   inputs:
     command: 'init'
@@ -31,32 +35,32 @@ steps:
     backendAzureRmStorageAccountName: 'ptutorial321'
     backendAzureRmContainerName: 'ptstate'
     backendAzureRmKey: 'terraform.tfstate'
-    workingDirectory: '$(System.DefaultWorkingDirectory)'
+    workingDirectory: '.'
 
-# Terraform Plan
-- task: TerraformCLI@1
+# Step 4: Terraform Plan
+- task: TerraformCLI@0
   displayName: 'Terraform Plan'
   inputs:
     command: 'plan'
     provider: 'azurerm'
     environmentServiceNameAzureRM: $(backendServiceArm)
-    workingDirectory: '$(System.DefaultWorkingDirectory)'
-    args: '-out=tfplan'
+    workingDirectory: '.'
+    args: '-out=./tfplan/tfplan'
 
-# Publish Plan as artifact (optional but useful for approvals)
+# Step 5: Publish Terraform Plan Artifact
 - task: PublishPipelineArtifact@1
-  displayName: 'Publish Terraform Plan'
+  displayName: 'Publish Terraform Plan Artifact'
   inputs:
     targetPath: '$(System.DefaultWorkingDirectory)/tfplan'
     artifact: 'tfplan'
     publishLocation: 'pipeline'
 
-# Terraform Apply
-- task: TerraformCLI@1
+# Step 6: Terraform Apply
+- task: TerraformCLI@0
   displayName: 'Terraform Apply'
   inputs:
     command: 'apply'
     provider: 'azurerm'
     environmentServiceNameAzureRM: $(backendServiceArm)
-    workingDirectory: '$(System.DefaultWorkingDirectory)'
-    args: 'tfplan -auto-approve'
+    workingDirectory: '.'
+    args: './tfplan/tfplan -auto-approve'
