@@ -1,4 +1,5 @@
 # Linux VM as NVA
+# Linux VM as NVA
 resource "azurerm_linux_virtual_machine" "nva_vm" {
   name                            = "nva-vm"
   resource_group_name             = azurerm_resource_group.hub_rg.name
@@ -16,15 +17,15 @@ resource "azurerm_linux_virtual_machine" "nva_vm" {
     azurerm_network_interface.nva_nic.id
   ]
 
-
   os_disk {
+    name                 = "osdisk-nva-vm"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
 
   source_image_reference {
     publisher = "Canonical"
-    offer     = "UbuntuServer"
+    offer     = "0001-com-ubuntu-server-focal"
     sku       = "20_04-lts"
     version   = "latest"
   }
@@ -35,6 +36,10 @@ resource "azurerm_linux_virtual_machine" "nva_vm" {
     echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
   EOF
   )
+
+  computer_name              = "nvavm"
+  provision_vm_agent         = true
+  allow_extension_operations = true
 
   tags = {
     role        = "nva"

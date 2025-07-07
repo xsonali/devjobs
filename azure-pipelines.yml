@@ -6,69 +6,71 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'  # Use Microsoft-hosted Ubuntu agent
 
-variables:
-  - group: devjobs-grp  # Your variable group in Azure DevOps
-  - name: SSH_PUBLIC_KEY
-    value: $(SSH_PUBLIC_KEY)
-  - name: TF_VERSION
-    value: '1.6.6'
-  - name: backendServiceArm
-    value: 'devjobsConnection'
+jobs:
+- job: terraform_job
+  timeoutInMinutes: 120
 
-steps:
-  # Step 0: Write the SSH public key to a file
-  - script: |
-      mkdir -p keys
-      echo "$SSH_PUBLIC_KEY" > keys/new_azure_key.pub
-    displayName: 'Write SSH public key to file'
+  variables:
+    - group: devjobs-grp     # Make sure this group contains SSH_PUBLIC_KEY variable
+    - name: TF_VERSION
+      value: '1.6.6'
+    - name: backendServiceArm
+      value: 'devjobsConnection'  # Your Azure service connection name
 
-  # Step 1: Install Terraform
-  - task: TerraformInstaller@1
-    displayName: 'Install Terraform'
-    inputs:
-      terraformVersion: $(TF_VERSION)
+  steps:
+    # Step 0: Write the SSH public key to a file
+    - script: |
+        mkdir -p keys
+        echo "$SSH_PUBLIC_KEY" > keys/new_azure_key.pub
+      displayName: 'Write SSH public key to file'
 
-  # Step 2: Create directory for tfplan
-  - script: mkdir -p tfplan
-    displayName: 'Create tfplan directory'
+    # Step 1: Install Terraform
+    - task: TerraformInstaller@1
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: $(TF_VERSION)
 
-  # Step 3: Terraform Init
-  - task: TerraformCLI@1
-    displayName: 'Terraform Init'
-    inputs:
-      command: 'init'
-      provider: 'azurerm'
-      backendServiceArm: $(backendServiceArm)
-      backendAzureRmResourceGroupName: 'PTutorial-rg'
-      backendAzureRmStorageAccountName: 'ptutorial321'
-      backendAzureRmContainerName: 'ptstate'
-      backendAzureRmKey: 'terraform.tfstate'
-      workingDirectory: '.'
+    # Step 2: Create directory for tfplan
+    - script: mkdir -p tfplan
+      displayName: 'Create tfplan directory'
 
-  # Step 4: Terraform Plan
-  - task: TerraformCLI@1
-    displayName: 'Terraform Plan'
-    inputs:
-      command: 'plan'
-      provider: 'azurerm'
-      environmentServiceNameAzureRM: $(backendServiceArm)
-      workingDirectory: '.'
-      args: '-out=./tfplan/tfplan'
+    # Step 3: Terraform Init
+    - task: TerraformCLI@1
+      displayName: 'Terraform Init'
+      inputs:
+        command: 'init'
+        provider: 'azurerm'
+        backendServiceArm: $(backendServiceArm)
+        backendAzureRmResourceGroupName: 'PTutorial-rg'
+        backendAzureRmStorageAccountName: 'ptutorial321'
+        backendAzureRmContainerName: 'ptstate'
+        backendAzureRmKey: 'terraform.tfstate'
+        workingDirectory: '.'
 
-  # Step 5: Publish Terraform Plan Artifact
-  - task: PublishPipelineArtifact@1
-    displayName: 'Publish Terraform Plan'
-    inputs:
-      targetPath: '$(System.DefaultWorkingDirectory)/tfplan'
-      artifact: 'tfplan'
-      publishLocation: 'pipeline'
+    # Step 4: Terraform Plan
+    - task: TerraformCLI@1
+      displayName: 'Terraform Plan'
+      inputs:
+        command: 'plan'
+        provider: 'azurerm'
+        environmentServiceNameAzureRM: $(backendServiceArm)
+        workingDirectory: '.'
+        args: '-out=./tfplan/tfplan'
 
-  # Step 6: Terraform Apply
-  - task: TerraformCLI@1
-    displayName: 'Terraform Apply'
-    inputs:
-      command: 'apply'
-      provider: 'azurerm'
-      environmentServiceNameAzureRM: $(backendServiceArm)
-      workingDirectory: '.'
-      args: './tfplan/tfplan -auto-approve'
+    # Step 5: Publish Terraform Plan Artifact
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Terraform Plan'
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/tfplan'
+        artifact: 'tfplan'
+        publishLocation: 'pipeline'
+
+    # Step 6: Terraform Apply
+    - task: TerraformCLI@1
+      displayName: 'Terraform Apply'
+      inputs:
+        command: 'apply'
+        provider: 'azurerm'
+        environmentServiceNameAzureRM: $(backendServiceArm)
+        workingDirectory: '.'
+        args: './tfplan/tfplan -auto-approve'

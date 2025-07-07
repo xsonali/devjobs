@@ -1,3 +1,5 @@
+# .gitignore
+backend.tf
 # === Terraform files ===
 *.tfstate
 *.tfstate.backup
