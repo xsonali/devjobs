@@ -64,3 +64,6 @@ CI/CD Option
 
 Set up a GitHub Actions or Azure DevOps pipeline to automate the above steps
 
+Disclaimer:
+Use this project at your own risk. The author is not responsible for any errors, misconfigurations, data loss, or misunderstandings that may arise from using or modifying this code.
+
