@@ -64,6 +64,10 @@ CI/CD Option
 
 Set up a GitHub Actions or Azure DevOps pipeline to automate the above steps
 
+Resource Visualizer:
+![image](https://github.com/user-attachments/assets/a622159b-0fa8-4a66-b189-448f5be3418a)
+
+
 Disclaimer:
 Use this project at your own risk. The author is not responsible for any errors, misconfigurations, data loss, or misunderstandings that may arise from using or modifying this code.
 
