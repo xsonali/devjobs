@@ -68,6 +68,11 @@ Resource Visualizer:
 
 ![image](https://github.com/user-attachments/assets/a622159b-0fa8-4a66-b189-448f5be3418a)
 
+Resources:
+
+![image](https://github.com/user-attachments/assets/046e1169-badc-46df-8c7b-bc62b56fd20a)
+
+
 
 Disclaimer:
 Use this project at your own risk. The author is not responsible for any errors, misconfigurations, data loss, or misunderstandings that may arise from using or modifying this code.
