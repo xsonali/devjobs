@@ -133,5 +133,27 @@ resource "azurerm_public_ip" "vpn_gw_public_ip2" {
   sku                 = "Standard"
 }
 
+# Local gateway and S2S VPN connection
+resource "azurerm_local_network_gateway" "onprem" {
+  name                = "onprem-lgw"
+  location            = azurerm_resource_group.hub_rg.location
+  resource_group_name = azurerm_resource_group.hub_rg.name
+  gateway_address     = "203.0.113.5"  # Replace with your on-prem VPN public IP
+  address_space       = ["172.16.0.0/16"]
+}
+
+resource "azurerm_virtual_network_gateway_connection" "s2s_connection" {
+  name                       = "s2s-connection"
+  resource_group_name        = azurerm_resource_group.hub_rg.name
+  location                   = azurerm_resource_group.hub_rg.location
+  virtual_network_gateway_id = azurerm_virtual_network_gateway.hub_vpn_gw.id
+  local_network_gateway_id   = azurerm_local_network_gateway.onprem.id
+  connection_type            = "IPsec"
+  routing_weight             = 10
+  shared_key                 = "your-shared-key"
+}
+
+  
+
 
 
